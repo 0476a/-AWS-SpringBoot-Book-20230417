@@ -6,14 +6,21 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.toyproject.bookmanagement.dto.auth.JwtRespDto;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -56,5 +63,48 @@ public class JwtTokenProvider {
 				.grantType("Bearer")
 				.accessToken(accessToken)
 				.build();
+	}
+	
+	// 토큰을 검증해주는 메소드
+	public boolean validateToken(String token) {
+		try {
+			// 토큰을 검증해주는 역할
+			Jwts.parserBuilder()
+				.setSigningKey(key) // 키값으로 암호화된 값을 푼다. (서명검증에 필요한 키값을 설정)
+				.build()
+				.parseClaimsJws(token); // 요청받은 토큰 값과 맞는지 확인해서 검증된 객체를 만들어줌.
+			
+			// 검증 되었으면 true 반환
+			return true;
+		} catch (SecurityException | MalformedJwtException e){
+			log.info("Invalid JWT Token", e);
+			// security 라이브러리 문제, JSON의 포멧이 잘못된 JWT가 들어옴.
+		} catch (ExpiredJwtException e) {
+			log.info("Expired JWT Token", e);
+			// 토큰의 유효기간이 만료된 경우
+		} catch (UnsupportedJwtException e) {
+			log.info("Unsupported JWT Token", e);
+			// jwt의 형식을 지키지 않은 경우
+		} catch (IllegalArgumentException e) {
+			log.info("IllegalArgument JWT Token", e);
+			// jwt 토큰이 없는 경우
+		} catch (Exception e) {
+			log.info("JWT Token Error", e);
+			// 나머지 모든 예외
+		}
+		
+		// 예외 발생하면 false 반환
+		return false;
+	}
+	
+	
+	// Bearer 때주기
+	public String getToken(String token) {
+		String type = "Bearer";
+		if(StringUtils.hasText(token) && token.startsWith(type)) {
+			return token.substring(type.length() + 1);
+		} 
+		
+		return null;
 	}
 }
