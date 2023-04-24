@@ -33,11 +33,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// 경로를 설정해줌.
 			.antMatchers("/auth/**")
 			// 위 경로에 대한 접근 권한을 모든 사용자에게 허용
-			.permitAll()
+			.permitAll();
 			// 위 경로에 대한 다른 모든 요청에 대한 설정
-			.anyRequest()
+//			.anyRequest();
 			// 모든 요청에 대해서 인증된 사용자만 접근할 수 있게 해줌.
-			.authenticated();
+//			.authenticated();
 	}
 	
 }
