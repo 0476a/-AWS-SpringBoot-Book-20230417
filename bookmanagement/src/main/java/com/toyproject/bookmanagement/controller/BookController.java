@@ -21,4 +21,8 @@ public class BookController {
 		return ResponseEntity.ok().body(bookService.searchBooks(searchBookReqDto));
 	}
 	
+	@GetMapping("/categories")
+	public ResponseEntity<?> categorys() {
+		return ResponseEntity.ok().body(bookService.getCategories());
+	}
 }

@@ -7,10 +7,21 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.toyproject.bookmanagement.security.JwtAuthenticationEntryPoint;
+import com.toyproject.bookmanagement.security.JwtAuthenticationFilter;
+import com.toyproject.bookmanagement.security.JwtTokenProvider;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -19,6 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		// 특정출처에서 오는 요청을 허용할 수 있음.
+		http.cors();
 		// csrf를 막아줘야함! -> jwt 토큰을 사용할 것이기 때문에
 		http.csrf().disable();
 		// httpBasic도 사용을 안해줘야함!
@@ -33,11 +46,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// 경로를 설정해줌.
 			.antMatchers("/auth/**")
 			// 위 경로에 대한 접근 권한을 모든 사용자에게 허용
-			.permitAll();
+			.permitAll()
 			// 위 경로에 대한 다른 모든 요청에 대한 설정
-//			.anyRequest();
+			.anyRequest()
 			// 모든 요청에 대해서 인증된 사용자만 접근할 수 있게 해줌.
-//			.authenticated();
+			.authenticated()
+			.and()
+			//   UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter 생성되어 실행될 수 있도록 해줌.
+			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling()
+			// 애러가 발생하면 응답을 해줌.
+			.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+		
+		
 	}
 	
 }
