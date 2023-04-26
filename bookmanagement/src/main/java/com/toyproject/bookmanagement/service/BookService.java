@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.toyproject.bookmanagement.dto.book.CategoryRespDto;
+import com.toyproject.bookmanagement.dto.book.GetBookRespDto;
 import com.toyproject.bookmanagement.dto.book.SearchBookReqDto;
 import com.toyproject.bookmanagement.dto.book.SearchBookRespDto;
 import com.toyproject.bookmanagement.repository.BookRepository;
@@ -20,6 +21,10 @@ public class BookService {
 	
 	private final BookRepository bookRepository;
 	
+	public GetBookRespDto getBook(int bookId) {
+		return bookRepository.getBook(bookId).toGetBookDto();
+	}
+	
 	public Map<String, Object> searchBooks(SearchBookReqDto searchBookReqDto) {
 		List<SearchBookRespDto> list = new ArrayList<>();
 		
@@ -27,6 +32,7 @@ public class BookService {
 		Map<String, Object> map = new HashMap<>();
 		map.put("index", index);
 		map.put("categoryIds", searchBookReqDto.getCategoryIds());
+		map.put("searchValue", searchBookReqDto.getSearchValue());
 		
 		bookRepository.searchBooks(map).forEach(book -> {
 			list.add(book.toDto());
