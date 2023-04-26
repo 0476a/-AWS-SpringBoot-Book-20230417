@@ -15,4 +15,5 @@ public class SearchBookRespDto {
 	private int categoryId;
 	private String categoryName;
 	private String coverImgUrl;
+	private int likeCount;
 }

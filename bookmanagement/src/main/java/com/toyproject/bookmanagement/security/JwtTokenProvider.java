@@ -85,19 +85,19 @@ public class JwtTokenProvider {
 			// 검증 되었으면 true 반환
 			return true;
 		} catch (SecurityException | MalformedJwtException e){
-			log.info("Invalid JWT Token", e);
+//			log.info("Invalid JWT Token", e);
 			// security 라이브러리 문제, JSON의 포멧이 잘못된 JWT가 들어옴.
 		} catch (ExpiredJwtException e) {
-			log.info("Expired JWT Token", e);
+//			log.info("Expired JWT Token", e);
 			// 토큰의 유효기간이 만료된 경우
 		} catch (UnsupportedJwtException e) {
-			log.info("Unsupported JWT Token", e);
+//			log.info("Unsupported JWT Token", e);
 			// jwt의 형식을 지키지 않은 경우
 		} catch (IllegalArgumentException e) {
-			log.info("IllegalArgument JWT Token", e);
+//			log.info("IllegalArgument JWT Token", e);
 			// jwt 토큰이 없는 경우
 		} catch (Exception e) {
-			log.info("JWT Token Error", e);
+//			log.info("JWT Token Error", e);
 			// 나머지 모든 예외
 		}
 		
