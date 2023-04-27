@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.toyproject.bookmanagement.dto.book.CategoryRespDto;
 import com.toyproject.bookmanagement.dto.book.GetBookRespDto;
+import com.toyproject.bookmanagement.dto.book.RentalListRespDto;
 import com.toyproject.bookmanagement.dto.book.SearchBookReqDto;
 import com.toyproject.bookmanagement.dto.book.SearchBookRespDto;
 import com.toyproject.bookmanagement.entity.User;
@@ -65,13 +66,40 @@ public class BookService {
 		return bookRepository.getLikeCount(bookId);
 	}
 	
-	public int getLikeStatus(int bookId) {
+	public int getLikeStatus(int bookId, int userId) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("bookId", bookId);
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		User userEntity = userRepository.findUserByEmail(email);
-		map.put("userId", userEntity.getUserId());
+		map.put("userId", userId);
+		
+		// 백엔드 입장에서 아이디를 받을 때 대신 쿼리가 두번쓰여서 비효율 적이어서 바꿈.
+//		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//		User userEntity = userRepository.findUserByEmail(email);
+//		map.put("userId", userEntity.getUserId());
 		
 		return bookRepository.getLikeStatus(map);
+	}
+	
+	public int setLike(int bookId, int userId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("bookId", bookId);
+		map.put("userId", userId);
+		
+		return bookRepository.setLike(map);
+	}
+	
+	public int disLike(int bookId, int userId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("bookId", bookId);
+		map.put("userId", userId);
+		
+		return bookRepository.disLike(map);
+	}
+	
+	public List<RentalListRespDto> getRentalListByBookId(int bookId) {
+		List<RentalListRespDto> list = new ArrayList<>();
+		bookRepository.getRentalListByBookId(bookId).forEach(rentalData -> {
+			list.add(rentalData.toDto());
+		});
+		return list;
 	}
 }
