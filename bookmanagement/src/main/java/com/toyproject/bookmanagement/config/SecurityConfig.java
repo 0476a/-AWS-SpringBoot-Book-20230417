@@ -47,6 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/auth/**")
 			// 위 경로에 대한 접근 권한을 모든 사용자에게 허용
 			.permitAll()
+			.antMatchers("/admin/**")
+			// 위 경로에 대한 접근 권한은 ADMIN을 가진 사람에게만 허용
+			.hasRole("ADMIN")
 			// 위 경로에 대한 다른 모든 요청에 대한 설정
 			.anyRequest()
 			// 모든 요청에 대해서 인증된 사용자만 접근할 수 있게 해줌.
